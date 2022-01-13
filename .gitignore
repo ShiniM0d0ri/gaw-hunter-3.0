@@ -1,0 +1,8 @@
+__pycache__
+.venv
+ss
+error
+config.ini
+*.csv
+followed.txt
+*.exe
