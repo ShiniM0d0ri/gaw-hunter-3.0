@@ -98,7 +98,10 @@ class TwitterBot:
                         time.sleep(1)
             self.driver.implicitly_wait(2)
             message_box.find_element(By.CSS_SELECTOR,"div[data-testid='tweetButton']").send_keys(Keys.ENTER)
-            time.sleep(4)
+
+            #wait for message box to close
+            WebDriverWait(self.driver, 10).until(EC.invisibility_of_element_located((By.CSS_SELECTOR,"div[role='dialog']")))
+            #time.sleep(4)
             return True
         except NoSuchElementException:
             print("Error: NoSuchElementException")
@@ -131,6 +134,15 @@ class Tasks:
     
     def do_tasks(self):
         try:
+            #empty ss folder
+            for the_file in os.listdir(os.getcwd()+'/ss/'):
+                file_path = os.path.join(os.getcwd()+'/ss/', the_file)
+                try:
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
+                except Exception as e:
+                    print(e)
+            
             if self.tasks['rt']:
                 self.twitter.open_tweet(self.tweet_url,rt=True)
             if self.tasks['follow']:

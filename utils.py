@@ -30,7 +30,10 @@ def tagfren(text):
     elif result[1][0]=="y" or result[1][0]=="f" or result[1][0]=="s" or result[1][0]=="t":
         n=2
     else:
-        n=int(result[1][0])
+        try:
+            n = int(result[1][0])
+        except ValueError:
+            n = 2
     return n
 
 def get_tasks(text, text_element,tweet_link):

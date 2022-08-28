@@ -6,3 +6,4 @@ config.ini
 *.csv
 followed.txt
 *.exe
+test.py

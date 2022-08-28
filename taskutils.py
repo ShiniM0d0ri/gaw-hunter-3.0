@@ -1,6 +1,8 @@
 import time
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import random
 from configparser import ConfigParser
 
@@ -49,7 +51,8 @@ def youtube(driver, url, like=True, sub=True, comment=False, cmt="@vnchoudhary35
                 like_btn = driver.find_element(By.CSS_SELECTOR,"#menu-container button")
                 if like_btn.get_attribute("aria-pressed") != "true":
                     print('liking the video')
-                    like_btn.find_element(By.CSS_SELECTOR,"yt-icon").click()
+                    driver.execute_script("arguments[0].click();", like_btn)
+                    #like_btn.find_element(By.CSS_SELECTOR,"yt-icon").click()
                 else:
                     print("already liked")
             if sub:
@@ -71,7 +74,12 @@ def youtube(driver, url, like=True, sub=True, comment=False, cmt="@vnchoudhary35
                 driver.find_element(By.CSS_SELECTOR, "#submit-button #button").click()
                 time.sleep(2)
                 driver.execute_script("window.scrollTo(0, 500)")
-        elif 'channel' in url or url.split("/")[3] == 'c':
+            #reload page
+            driver.get(url)
+            #wait for like_btn to be present
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR,"#menu-container button")))
+            time.sleep(2)
+        else:#if 'channel' in url or url.split("/")[3] == 'c':
             #sub the channel
             sub_btn = driver.find_element(By.CSS_SELECTOR,"yt-formatted-string.style-scope.ytd-subscribe-button-renderer")
             if sub_btn.text.strip() == "SUBSCRIBE":
@@ -153,10 +161,11 @@ def get_frens(n):
     return " ".join(random.sample(frens,n))
 
 def check_followed(user):
-    with open('followed.txt','a+') as f:
-        for line in f.readlines():
+    #check if user exists in followed.txt and if not add it
+    with open('followed.txt', 'r') as f:
+        for line in f:
             if user in line:
                 return True
-        #add user to followed.txt
+    with open('followed.txt', 'a') as f:
         f.write(user+'\n')
-    return False
+        return False
